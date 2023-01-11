@@ -98,4 +98,17 @@ public class AStarTile : MonoBehaviour
         return new Color32(r, g, b, a);
     }   
 
+    public void ResetTile()
+    {
+        gCost = 0;
+        hCost = 0;
+        fCost = 0;
+        parent = null;
+        isVisited = false;
+        isCurrent = false;
+        isPath = false;
+        isStart = false;
+        isEnd = false;
+    }
+
 }

@@ -10,8 +10,9 @@ public class PlayerCar : MonoBehaviour
     private AStarTile nextTile;
     private Vector3 currentDirection = Vector3.right;
     private Vector3 storedDirection = Vector3.up;
-    private int elapsedFrames = 0;
-    private int interpolationFramesCount = 30;
+    // private int elapsedFrames = 0;
+    // private int interpolationFramesCount = 30;
+    private float speed = 10f;
     private bool storedDirectionToBeConsumed = false;
 
     public CinemachineVirtualCamera[] cams;
@@ -21,7 +22,6 @@ public class PlayerCar : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        elapsedFrames = interpolationFramesCount;
         grid = FindObjectOfType<AStarGrid>();
         currentTile = grid.GetTile(transform.position);
     }
@@ -88,24 +88,33 @@ public class PlayerCar : MonoBehaviour
 
         if (nextTile != null && nextTile.isWalkable)
         {   
-            transform.position = LerpToTile(nextTile);        
+            transform.position = MoveToNextTile(nextTile);        
         }
     }
-    private Vector3 LerpToTile(AStarTile tile)
+        private Vector3 MoveToNextTile(AStarTile tile)
     {
-        float interpolationRatio = (float)elapsedFrames / interpolationFramesCount;
-        Vector3 interpolatedPosition = Vector3.Lerp(transform.position, tile.transform.position, interpolationRatio);
-        if(elapsedFrames == interpolationFramesCount+1)
+        var step = speed * Time.deltaTime;
+        Vector3 interpolatedPosition = Vector3.MoveTowards(transform.position, tile.transform.position, step);
+        if(interpolatedPosition == tile.transform.position)
         {
             ReachDestination(tile);
-            return tile.transform.position;
         }
-        elapsedFrames = (elapsedFrames + 1);
         return interpolatedPosition;
     }
+    // private Vector3 MoveToNextTile(AStarTile tile)
+    // {
+    //     float interpolationRatio = (float)elapsedFrames / interpolationFramesCount;
+    //     Vector3 interpolatedPosition = Vector3.Lerp(transform.position, tile.transform.position, interpolationRatio);
+    //     if(elapsedFrames == interpolationFramesCount+1)
+    //     {
+    //         ReachDestination(tile);
+    //         return tile.transform.position;
+    //     }
+    //     elapsedFrames = (elapsedFrames + 1);
+    //     return interpolatedPosition;
+    // }
     private void ReachDestination(AStarTile tile)
     {
-        elapsedFrames = 0;
         nextTile = null;
         currentTile = tile;  
         if (storedDirectionToBeConsumed){

@@ -130,6 +130,10 @@ public class AStarGrid : MonoBehaviour
     
     public List<AStarTile> GetPath(AStarTile start, AStarTile end)
     {
+        foreach (var tile in grid)
+        {
+            tile.ResetTile();
+        }
         List<AStarTile> openList = new List<AStarTile>();
         List<AStarTile> closedList = new List<AStarTile>();
         openList.Add(start);

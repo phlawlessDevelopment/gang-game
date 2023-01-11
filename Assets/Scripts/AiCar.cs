@@ -5,6 +5,8 @@ using UnityEngine;
 public class AiCar : MonoBehaviour
 {
     public  Vector2[] waypoints;
+
+    public float speed = 10f;
     private AStarGrid grid;
     private AStarTile currentTile;
 
@@ -15,7 +17,9 @@ public class AiCar : MonoBehaviour
 
     private int elapsedFrames = 0;
 
-    private int interpolationFramesCount = 30;
+    private int interpolationFramesCount = 15;
+
+
     
 
 
@@ -24,7 +28,7 @@ public class AiCar : MonoBehaviour
     {
         grid = FindObjectOfType<AStarGrid>();
         currentTile = grid.GetTile(transform.position);
-        waypoints = new Vector2[2]{ new Vector2(20,20) , new Vector2(24, 21) };
+        waypoints = new Vector2[2]{ new Vector2(20,20) , new Vector2(21, 26) };
     }
 
     // Update is called once per frame
@@ -54,21 +58,19 @@ public class AiCar : MonoBehaviour
             }
             else
             {
-                transform.position = LerpToTile(path[0]);
+                transform.position = MoveToNextTile(path[0]);
             }
         }
     }
 
-    private Vector3 LerpToTile(AStarTile tile)
+    private Vector3 MoveToNextTile(AStarTile tile)
     {
-        float interpolationRatio = (float)elapsedFrames / interpolationFramesCount;
-        Vector3 interpolatedPosition = Vector3.Lerp(transform.position, tile.transform.position, interpolationRatio);
-        if(elapsedFrames == interpolationFramesCount+1)
+        var step = speed * Time.deltaTime;
+        Vector3 interpolatedPosition = Vector3.MoveTowards(transform.position, tile.transform.position, step);
+        if(interpolatedPosition == tile.transform.position)
         {
             ReachDestination(tile);
-            return tile.transform.position;
         }
-        elapsedFrames = (elapsedFrames + 1);
         return interpolatedPosition;
     }
 
@@ -81,14 +83,8 @@ public class AiCar : MonoBehaviour
 
     private void SetPath()
     {
-        
+        print("waypoint index: " + waypointIndex);
         path = grid.GetPath(currentTile, grid.GetTile(waypoints[waypointIndex]));
-        if(path.Count <= 2){
-        print(waypointIndex);
         waypointIndex = (waypointIndex + 1) % waypoints.Length;
-        print(waypointIndex);
-        path = grid.GetPath(currentTile, grid.GetTile(waypoints[waypointIndex]));
-        print(path.Count);
-        }
     }
 }
