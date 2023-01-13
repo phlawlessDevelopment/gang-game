@@ -351,6 +351,7 @@
 "Assets/Scripts/AStarTile.cs"
 "Assets/Scripts/AiCar.cs"
 "Assets/Scripts/PlayerCar.cs"
+"Assets/Scripts/Waypoint.cs"
 -langversion:9.0
 
 /deterministic

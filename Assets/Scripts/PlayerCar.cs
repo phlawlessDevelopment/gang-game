@@ -10,8 +10,7 @@ public class PlayerCar : MonoBehaviour
     private AStarTile nextTile;
     private Vector3 currentDirection = Vector3.right;
     private Vector3 storedDirection = Vector3.up;
-    // private int elapsedFrames = 0;
-    // private int interpolationFramesCount = 30;
+    private Vector3 storedDirectionCache = Vector3.zero;
     private float speed = 10f;
     private bool storedDirectionToBeConsumed = false;
 
@@ -39,19 +38,43 @@ public class PlayerCar : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
-            storedDirection = Vector3.up;
+            if (storedDirectionToBeConsumed)
+            {
+                storedDirectionCache = Vector3.up;
+            }
+            else{
+                storedDirection = Vector3.up;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
-            storedDirection = Vector3.down;
+            if (storedDirectionToBeConsumed)
+            {
+                storedDirectionCache = Vector3.down;
+            }
+            else{
+                storedDirection = Vector3.down;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
-            storedDirection = Vector3.left;
+            if (storedDirectionToBeConsumed)
+            {
+                storedDirectionCache = Vector3.left;
+            }
+            else{
+                storedDirection = Vector3.left;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
-            storedDirection = Vector3.right;
+            if (storedDirectionToBeConsumed)
+            {
+                storedDirectionCache = Vector3.right;
+            }
+            else{
+                storedDirection = Vector3.right;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -101,18 +124,7 @@ public class PlayerCar : MonoBehaviour
         }
         return interpolatedPosition;
     }
-    // private Vector3 MoveToNextTile(AStarTile tile)
-    // {
-    //     float interpolationRatio = (float)elapsedFrames / interpolationFramesCount;
-    //     Vector3 interpolatedPosition = Vector3.Lerp(transform.position, tile.transform.position, interpolationRatio);
-    //     if(elapsedFrames == interpolationFramesCount+1)
-    //     {
-    //         ReachDestination(tile);
-    //         return tile.transform.position;
-    //     }
-    //     elapsedFrames = (elapsedFrames + 1);
-    //     return interpolatedPosition;
-    // }
+
     private void ReachDestination(AStarTile tile)
     {
         nextTile = null;
@@ -121,7 +133,13 @@ public class PlayerCar : MonoBehaviour
             if(storedDirection != Vector3.zero){
                 currentDirection = storedDirection;
             }
+            if (storedDirectionCache != Vector3.zero){
+                storedDirection = storedDirectionCache;
+                storedDirectionCache = Vector3.zero;
+            }
+            else{
             storedDirection = Vector3.zero;
+            }
             storedDirectionToBeConsumed = false;
             }
     }

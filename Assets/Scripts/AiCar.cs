@@ -4,31 +4,29 @@ using UnityEngine;
 
 public class AiCar : MonoBehaviour
 {
-    public  Vector2[] waypoints;
-
+    public  List<Vector3> waypoints = new List<Vector3>();
     public float speed = 10f;
     private AStarGrid grid;
     private AStarTile currentTile;
 
-
     private int waypointIndex = 0;
 
     private List<AStarTile> path = new List<AStarTile>();
-
-    private int elapsedFrames = 0;
-
-    private int interpolationFramesCount = 15;
-
-
-    
-
 
     // Start is called before the first frame update
     void Start()
     {
         grid = FindObjectOfType<AStarGrid>();
         currentTile = grid.GetTile(transform.position);
-        waypoints = new Vector2[2]{ new Vector2(20,20) , new Vector2(21, 26) };
+        var allWaypoints = FindObjectsOfType<Waypoint>();
+        foreach (var waypoint in allWaypoints)
+        {
+            if (waypoint.aiCar == this)
+            {
+                waypoints.Add(waypoint.transform.position);
+                waypoint.gameObject.SetActive(false);
+            }
+        } 
     }
 
     // Update is called once per frame
@@ -76,15 +74,13 @@ public class AiCar : MonoBehaviour
 
     private void ReachDestination(AStarTile tile)
     {
-        elapsedFrames = 0;
         currentTile = tile;  
     }
 
 
     private void SetPath()
     {
-        print("waypoint index: " + waypointIndex);
         path = grid.GetPath(currentTile, grid.GetTile(waypoints[waypointIndex]));
-        waypointIndex = (waypointIndex + 1) % waypoints.Length;
+        waypointIndex = (waypointIndex + 1) % waypoints.Count;
     }
 }
